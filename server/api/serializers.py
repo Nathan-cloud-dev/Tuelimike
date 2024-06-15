@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 
 from . import models
@@ -21,11 +22,20 @@ class UserSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("User with this email already exists")
         return value
+    
+    # subject = 'Verify Your Email'
+    # from_email = '@gmail.com'
+    # message = 'Please click the link below to verify your email:\n\nhttp://your-domain.com/verify-email/?token=your_verification_token'
+        
+    # def email_user(self, user):
+    #     """Send an email to this user."""
+    #     send_mail(self.subject, self.message, self.from_email, [user.email], fail_silently=False)
 
     def create(self, validated_data):
         self.validate_username(validated_data['username'])
         self.validate_email(validated_data['email'])
         user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
+        # self.email_user(user)
         return user
     
 class ProfileSerializer(serializers.ModelSerializer):
