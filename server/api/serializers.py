@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile
-from .models import Course
+
+from . import models
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,10 +30,29 @@ class UserSerializer(serializers.ModelSerializer):
     
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
+        model = models.Profile
         fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
+        model = models.Course
+        fields = '__all__'
+        courses =User.courses
+        
+
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Cart
+        fields = '__all__'
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class meta:
+        model = models.Feedback
+        fields = '__all__'
+
+class UserCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserCourse
         fields = '__all__'
