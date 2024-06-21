@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -31,6 +32,7 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
 	const [inputs, setInputs] = React.useState({});
+  const navigate = useNavigate();
 
 	function handleChange(event) {
 		const name = event.target.name;
@@ -42,20 +44,32 @@ export default function SignUp() {
     event.preventDefault();
 		console.log(inputs);
 
-		fetch(`${api}/users/`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(inputs),
-		})
-		.then((response) => response.json())
-		.then((data) => {
-				console.log(data)
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
+    api.post('/api/users/', {inputs}).then((response) => {
+      if (response.status === 200) {
+        alert('User created successfully');
+      } else {
+        alert('User creation failed');
+      }
+    }).catch((error) => {
+      console.error('Error:', error);
+    });
+
+		// fetch(`http://127.0.0.1:8000/api/users/`, {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify(inputs),
+		// })
+		// .then((response) => response.json())
+		// .then((data) => {
+		// 		console.log(data)
+    //     navigate('/login')
+
+		// })
+		// .catch((error) => {
+		// 	console.error('Error:', error);
+		// });
 	}
 
   return (
@@ -129,14 +143,14 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <NavLink to="/login" variant="body2">
                   Already have an account? Sign in
-                </Link>
+                </NavLink>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>
     </ThemeProvider>
   );

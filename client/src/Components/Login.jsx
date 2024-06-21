@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { AppContext } from '../App';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { setSignedIn } = useContext(AppContext);
     
   const [inputs, setInputs] = useState({
     username: '',
@@ -19,23 +22,22 @@ export default function Login() {
     event.preventDefault();
 		console.log(inputs);
 
-		fetch(`${api}/token/`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(inputs),
-		})
-		.then((response) => response.json())
-		.then((data) => {
-		
-				localStorage.setItem('access', data.access);
-				localStorage.setItem('refresh', data.refresh);
-				console.log(data)
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
+    api.post('/api/token/', {
+      username: inputs.username,
+      password: inputs.password,
+    }).then((response) => {
+      if (response.status === 200) {
+        setSignedIn(true);
+        localStorage.setItem('access', response.data.access);
+        localStorage.setItem('refresh', response.data.refresh);
+        navigate('/');
+      } else {
+        alert('Wrong username or password!');
+      }
+    }).catch((error) => {
+      console.error('Error:', error);
+    });
+
 	}
     return (
       <>
@@ -113,9 +115,9 @@ export default function Login() {
   
             <p className="mt-10 text-center text-sm text-gray-500">
               Not a member?{' '}
-              <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              <NavLink to="/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                 Start a 14 day free trial
-              </a>
+              </NavLink>
             </p>
           </div>
         </div>

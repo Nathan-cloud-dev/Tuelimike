@@ -1,5 +1,6 @@
-import { Fragment, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Fragment, useState, useContext } from 'react';
+import { AppContext } from '../App';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogPanel,
@@ -41,18 +42,25 @@ function classNames(...classes) {
 
 export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, signedIn, setSignedIn } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    setSignedIn(false);
+    navigate('/login');
+    // window.location.reload();
+  }
 
   return (
     <header className="bg-white">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Tuelimike</span>
-						<NavLink to={"/"}>
-							<h2 className='text-3xl'>Tuelimike</h2>
-						</NavLink>
-            
-          </a>
+          <span className="sr-only">Tuelimike</span>
+          <NavLink to={"/"} className="-m-1.5 p-1.5">
+            Tuelimike
+          </NavLink>
         </div>
         <div className="flex lg:hidden">
           <button
@@ -118,17 +126,23 @@ export default function Example() {
           <NavLink to={'/courses'} className="text-sm font-semibold leading-6 text-gray-900">
             Courses
           </NavLink>
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            Marketplace
-          </a>
+          <NavLink to={'/cart'} className="text-sm font-semibold leading-6 text-gray-900">
+            Cart
+          </NavLink>
           <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
             Company
           </a>
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <NavLink to="/login" className="text-sm font-semibold leading-6 text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </NavLink>
+          { !signedIn && !isAuthenticated ?
+            <NavLink to="/login" className="text-sm font-semibold leading-6 text-gray-900">
+              Log in <span aria-hidden="true">&rarr;</span>
+            </NavLink>
+            :
+            <NavLink to="/login" onClick={handleLogout} className="text-sm font-semibold leading-6 text-gray-900">
+              Logout <span aria-hidden="true">&rarr;</span>
+            </NavLink>
+          }
         </div>
       </nav>
       <Dialog className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -137,7 +151,7 @@ export default function Example() {
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Tuelimike</span>
-              <h2 className='text-2xl'>Tuelimike</h2>
+              <NavLink to={'/'} className='text-2xl'>Tuelimike</NavLink>
             </a>
             <button
               type="button"
@@ -182,12 +196,12 @@ export default function Example() {
                 >
                   Courses
                 </NavLink>
-                <a
-                  href="#"
+                <NavLink
+                  to={'/cart'}
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
-                  Marketplace
-                </a>
+                  Cart
+                </NavLink>
                 <a
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
@@ -196,12 +210,15 @@ export default function Example() {
                 </a>
               </div>
               <div className="py-6">
-                <NavLink
-                  to="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                >
-                  Log in
+              { !signedIn && !isAuthenticated ?
+                <NavLink to="/login" className="text-sm font-semibold leading-6 text-gray-900">
+                  Log in <span aria-hidden="true">&rarr;</span>
                 </NavLink>
+                :
+                <NavLink to="/login" onClick={handleLogout} className="text-sm font-semibold leading-6 text-gray-900">
+                  Logout <span aria-hidden="true">&rarr;</span>
+                </NavLink>
+              }
               </div>
             </div>
           </div>
